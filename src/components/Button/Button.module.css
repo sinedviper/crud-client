@@ -1,0 +1,33 @@
+.button {
+  width: 140px;
+  padding: 10px 15px;
+  text-align: center;
+  font-size: 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.link {
+  color: white;
+  text-decoration: none;
+}
+
+.green {
+  background-color: var(--green);
+}
+
+.red {
+  margin: 0 auto;
+  width: 30px;
+  background-color: rgb(200, 72, 72);
+}
+
+.none {
+  padding: 0 15px;
+  background-color: inherit;
+}
+
+.none .link {
+  color: var(--green);
+  font-weight: 600;
+}

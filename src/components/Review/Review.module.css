@@ -1,0 +1,22 @@
+.reviewWrapper {
+  padding: 20px;
+  width: 100%;
+}
+
+.table {
+  margin: 20px auto;
+  width: 100%;
+}
+
+.tableHead th {
+  padding: 5px;
+  text-align: left;
+  border-bottom: 1px solid #666;
+  color: #666;
+}
+
+.tdButton {
+  width: 120px;
+  padding: 12px 0;
+  text-align: center;
+}
