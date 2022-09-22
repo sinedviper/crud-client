@@ -1,14 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import cn from "classnames";
 
 import Button from "../Button/Button";
 import { ReviewProps } from "./Review.props";
 import { useAppSelector } from "../../hooks/hooks";
-import { allUsers } from "../../features/Users/users-slice";
+import {
+  selectAllUsers,
+  actionUpdateUsers,
+} from "../../features/Users/users-slice";
 import { User } from "../../interface/User.interface";
+import { getUsers } from "../../mutation/User";
+import { useAppDispatch } from "../../hooks/hooks";
+import { Users } from "../../interface/User.interface";
 
 import styles from "./Review.module.css";
+import { useMutation } from "@apollo/client";
+import { removeUsers } from "../../mutation/User";
 
 const object = [
   { id: "1", username: "sined", password: "111", email: "viper@gmail.com" },
@@ -18,11 +27,40 @@ const object = [
 ];
 
 const Review = ({ className, ...props }: ReviewProps): JSX.Element => {
+  const { data, loading, error } = useQuery<Users>(getUsers);
+  const [idUser, setIdUser] = useState<String>("");
+
   const idParams = useParams();
+  const dispatch = useAppDispatch();
 
-  const { users, loading } = useAppSelector(allUsers);
+  const { users, load } = useAppSelector(selectAllUsers);
 
-  const handleClick = (id: string) => {};
+  const [removeUser] = useMutation<User>(removeUsers, {
+    variables: { id: idUser },
+  });
+
+  const handleClick = async (id: String) => {
+    setIdUser(id);
+    await removeUser();
+    dispatch(
+      actionUpdateUsers({
+        users: data?.getUsers,
+        load: loading,
+        error: error?.message,
+      })
+    );
+  };
+
+  useEffect(() => {
+    dispatch(
+      actionUpdateUsers({
+        users: data?.getUsers,
+        load: loading,
+        error: error?.message,
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   return (
     <div className={cn(className, styles.reviewWrapper)} {...props}>
@@ -48,7 +86,7 @@ const Review = ({ className, ...props }: ReviewProps): JSX.Element => {
           </thead>
           <tbody className={styles.tableMain}>
             {!idParams.idUser ? (
-              users.map((user: User) => (
+              users?.map((user: User) => (
                 <tr key={user._id}>
                   <td>{user._id}</td>
                   <td>{user.username}</td>

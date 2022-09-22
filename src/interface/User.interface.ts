@@ -1,3 +1,4 @@
+import { getUser } from "./../mutation/User";
 export interface User {
   _id: string;
   username: string;
@@ -7,4 +8,5 @@ export interface User {
 
 export interface Users {
   users: User[];
+  getUsers?: User[];
 }
