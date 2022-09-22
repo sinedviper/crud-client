@@ -4,6 +4,9 @@ import cn from "classnames";
 
 import Button from "../Button/Button";
 import { ReviewProps } from "./Review.props";
+import { useAppSelector } from "../../hooks/hooks";
+import { allUsers } from "../../features/Users/users-slice";
+import { User } from "../../interface/User.interface";
 
 import styles from "./Review.module.css";
 
@@ -14,15 +17,17 @@ const object = [
   { id: "4", username: "sined", password: "111", email: "viper@gmail.com" },
 ];
 
-const Review = ({ users, className, ...props }: ReviewProps): JSX.Element => {
+const Review = ({ className, ...props }: ReviewProps): JSX.Element => {
   const idParams = useParams();
+
+  const { users, loading } = useAppSelector(allUsers);
 
   const handleClick = (id: string) => {};
 
   return (
     <div className={cn(className, styles.reviewWrapper)} {...props}>
-      {!object ? (
-        <span className={styles.notFound}>Not found users...</span>
+      {loading ? (
+        <span className={styles.loading}>Loading users...</span>
       ) : (
         <table className={styles.table}>
           <thead>
@@ -43,19 +48,23 @@ const Review = ({ users, className, ...props }: ReviewProps): JSX.Element => {
           </thead>
           <tbody className={styles.tableMain}>
             {!idParams.idUser ? (
-              object.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
+              users.map((user: User) => (
+                <tr key={user._id}>
+                  <td>{user._id}</td>
                   <td>{user.username}</td>
                   <td>{user.email}</td>
                   <td>{user.password}</td>
                   <td className={styles.tdButton}>
-                    <Button color='none' link={`users/${user.id}`}>
+                    <Button
+                      color='none'
+                      link={`users/${user._id}`}
+                      style={{ textAlign: "center" }}
+                    >
                       View profile
                     </Button>
                   </td>
                   <td className={styles.tdButton}>
-                    <Button color='red' onClick={() => handleClick(user.id)}>
+                    <Button color='red' onClick={() => handleClick(user._id)}>
                       X
                     </Button>
                   </td>

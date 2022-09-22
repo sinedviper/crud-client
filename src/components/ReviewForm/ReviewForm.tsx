@@ -1,31 +1,59 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import cn from "classnames";
+import { useForm } from "react-hook-form";
 
 import Button from "../Button/Button";
+import Input from "../Input/Input";
 import { ReviewFormProps } from "./ReviewForm.props";
 
 import styles from "./ReviewForm.module.css";
-import Input from "../Input/Input";
+import { User } from "../../interface/User.interface";
 
-const ReviewForm = ({
-  user,
-  className,
-  ...props
-}: ReviewFormProps): JSX.Element => {
+const ReviewForm = ({ className, ...props }: ReviewFormProps): JSX.Element => {
   const idParams = useParams();
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<User>();
+
+  console.log(idParams);
+
+  const onSubmit = (data: User) => {
+    console.log(data);
+    navigate("/users");
+  };
 
   return (
     <div className={cn(className, styles.reviewFormWrapper)} {...props}>
-      <form>
-        <Input placeholder='name' />
-        <Input placeholder='password' />
-        <Input placeholder='email' />
-        <Button color='green' link={`users/create`} className={styles.button}>
-          {!idParams.idUser ? "Create a new users" : "Edit the user"}
-        </Button>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Input
+          placeholder='username'
+          {...register("username")}
+          error={errors.username}
+        />
+        <Input
+          placeholder='password'
+          {...register("password", {
+            required: { value: true, message: "Fill correct the password" },
+            minLength: 10,
+          })}
+          error={errors.password}
+        />
+        <Input
+          placeholder='email'
+          {...register("email")}
+          error={errors.email}
+        />
+        <input
+          type='submit'
+          className={styles.button}
+          value={!idParams.idUser ? "Create a new users" : "Edit the user"}
+        />
       </form>
-      <Button color='none' link={`users`} style={{ marginTop: 20 }}>
+      <Button color='none' link='users' style={{ marginTop: 20 }}>
         View all users
       </Button>
     </div>

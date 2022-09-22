@@ -20,3 +20,10 @@
   padding: 12px 0;
   text-align: center;
 }
+
+.loading {
+  color: #666;
+  font-weight: 600;
+  display: block;
+  margin: 0 0 20px 15px;
+}

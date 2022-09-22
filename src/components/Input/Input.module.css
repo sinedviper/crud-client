@@ -6,13 +6,18 @@
 
 .input {
   border: 2px solid #777;
-  width: 98%;
-  height: 30px;
+  width: 100%;
   border-radius: 5px;
-  padding: 5px 10px;
   font-size: 17px;
-  margin-bottom: 10px;
+  padding: 10px 0;
+  margin-bottom: 30px;
   outline-color: var(--green);
+  text-indent: 10px;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  font-size: 17px;
 }
 
 .input:hover {
@@ -24,4 +29,9 @@
 }
 .errorMessage {
   position: absolute;
+  display: block;
+  bottom: 8px;
+  font-size: 17px;
+  left: 10px;
+  color: rgb(200, 72, 72);
 }
