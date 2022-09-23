@@ -10,7 +10,7 @@ import "./index.css";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   uri: "http://localhost:3001/graphql",
   cache: new InMemoryCache(),
 });

@@ -11,28 +11,9 @@ export const getUsers = gql`
   }
 `;
 
-export const getUser = gql`
-  query GetUser($id: String!) {
-    getUser(id: $id) {
-      _id
-      username
-      password
-      email
-    }
-  }
-`;
-
-export const removeUsers = gql`
+export const removeUser = gql`
   mutation ($id: String!) {
     removeUser(id: $id) {
-      text
-    }
-  }
-`;
-
-export const registerUsers = gql`
-  mutation ($input: UserInput!) {
-    registerUser(input: $input) {
       _id
       username
       email
@@ -40,9 +21,20 @@ export const registerUsers = gql`
     }
   }
 `;
-export const updateUsers = gql`
-  mutation ($id: String!, $registerInput2: UserInput!) {
-    updateUser(id: $id, input: $registerInput2) {
+
+export const createUser = gql`
+  mutation ($user: UserInput!) {
+    createUser(user: $user) {
+      _id
+      username
+      email
+      password
+    }
+  }
+`;
+export const updateUser = gql`
+  mutation ($id: String!, $user: UserInput!) {
+    updateUser(id: $id, user: $user) {
       _id
       username
       email

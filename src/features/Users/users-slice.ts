@@ -1,41 +1,132 @@
+import {
+  createUser,
+  getUsers,
+  removeUser,
+  updateUser,
+} from "./../../mutation/User";
+import { client } from "./../../index";
 import { User } from "./../../interface/User.interface";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+export const loadUsers = createAsyncThunk("@@users/load-users", () => {
+  return client.query({ query: getUsers });
+});
+
+export const removeUsers = createAsyncThunk(
+  "@@users/remove-user",
+  (id: String) => {
+    return client.mutate({ mutation: removeUser, variables: { id } });
+  }
+);
+
+export const createUsers = createAsyncThunk(
+  "@@users/create-user",
+  (user: Omit<User, "_id">) => {
+    return client.mutate({ mutation: createUser, variables: { user } });
+  }
+);
 
 interface data {
-  users: User[] | undefined;
-  load: boolean;
-  error: string | undefined;
+  id: String;
+  user: Omit<User, "_id">;
 }
 
+export const editUsers = createAsyncThunk(
+  "@@users/update-user",
+  (data: data) => {
+    return client.mutate({
+      mutation: updateUser,
+      variables: { id: data.id, user: data.user },
+    });
+  }
+);
+
 interface usersState {
-  state: string;
-  error: string;
-  list: data;
+  status: string;
+  error: any;
+  list: User[];
+  user: User | null;
 }
 
 const initialState: usersState = {
-  state: "idle",
+  status: "idle",
   error: "",
-  list: { users: [], load: false, error: "" },
+  list: [],
+  user: null,
 };
 
 const usersSlice = createSlice({
   name: "@@users",
   initialState: initialState,
   reducers: {
-    actionUpdateUsers: (state, action: PayloadAction<data>) => {
-      state.state = action.payload.load ? "loading" : "received";
-      if (action.payload.error) {
-        state.state = "rejected";
-      }
-      state.list = action.payload;
-      state.error = String(action.payload.error);
+    actionUser: (state, action: PayloadAction<String>) => {
+      // eslint-disable-next-line array-callback-return
+      state.list.map((val): void => {
+        // eslint-disable-next-line eqeqeq
+        if (val._id == action.payload) {
+          state.user = val;
+        }
+      });
     },
+    actionRemoveUser: (state) => {
+      state.user = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loadUsers.pending, (state, action) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(loadUsers.rejected, (state, action) => {
+        state.status = "rejected";
+        state.error = action.payload || action.meta;
+      })
+      .addCase(loadUsers.fulfilled, (state, action) => {
+        state.status = "received";
+        state.list = action.payload.data.getUsers;
+      })
+      .addCase(removeUsers.pending, (state, action) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(removeUsers.rejected, (state, action) => {
+        state.status = "rejected";
+        state.error = action.payload || action.meta;
+      })
+      .addCase(removeUsers.fulfilled, (state, action) => {
+        state.status = "received";
+        state.list = action.payload.data.removeUser;
+      })
+      .addCase(createUsers.pending, (state, action) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(createUsers.rejected, (state, action) => {
+        state.status = "rejected";
+        state.error = action.payload || action.meta;
+      })
+      .addCase(createUsers.fulfilled, (state, action) => {
+        state.status = "received";
+        state.list = action.payload.data.createUser;
+      })
+      .addCase(editUsers.pending, (state, action) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(editUsers.rejected, (state, action) => {
+        state.status = "rejected";
+        state.error = action.payload || action.meta;
+      })
+      .addCase(editUsers.fulfilled, (state, action) => {
+        state.status = "received";
+        state.list = action.payload.data.updateUser;
+      });
   },
 });
 
-export const { actionUpdateUsers } = usersSlice.actions;
+export const { actionUser, actionRemoveUser } = usersSlice.actions;
 
 export const usersReducer = usersSlice.reducer;
 
-export const selectAllUsers = (state) => state.users.list;
+export const selectAllUsers = (state): usersState => state.users;

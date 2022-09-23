@@ -1,70 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { useQuery } from "@apollo/client";
-import { useParams } from "react-router-dom";
+import React from "react";
 import cn from "classnames";
 
 import Button from "../Button/Button";
 import { ReviewProps } from "./Review.props";
-import { useAppSelector } from "../../hooks/hooks";
-import {
-  selectAllUsers,
-  actionUpdateUsers,
-} from "../../features/Users/users-slice";
 import { User } from "../../interface/User.interface";
-import { getUsers } from "../../mutation/User";
-import { useAppDispatch } from "../../hooks/hooks";
-import { Users } from "../../interface/User.interface";
+import { useUsers } from "./use-users";
 
 import styles from "./Review.module.css";
-import { useMutation } from "@apollo/client";
-import { removeUsers } from "../../mutation/User";
-
-const object = [
-  { id: "1", username: "sined", password: "111", email: "viper@gmail.com" },
-  { id: "2", username: "sined", password: "111", email: "viper@gmail.com" },
-  { id: "3", username: "sined", password: "111", email: "viper@gmail.com" },
-  { id: "4", username: "sined", password: "111", email: "viper@gmail.com" },
-];
 
 const Review = ({ className, ...props }: ReviewProps): JSX.Element => {
-  const { data, loading, error } = useQuery<Users>(getUsers);
-  const [idUser, setIdUser] = useState<String>("");
-
-  const idParams = useParams();
-  const dispatch = useAppDispatch();
-
-  const { users, load } = useAppSelector(selectAllUsers);
-
-  const [removeUser] = useMutation<User>(removeUsers, {
-    variables: { id: idUser },
-  });
-
-  const handleClick = async (id: String) => {
-    setIdUser(id);
-    await removeUser();
-    dispatch(
-      actionUpdateUsers({
-        users: data?.getUsers,
-        load: loading,
-        error: error?.message,
-      })
-    );
-  };
-
-  useEffect(() => {
-    dispatch(
-      actionUpdateUsers({
-        users: data?.getUsers,
-        load: loading,
-        error: error?.message,
-      })
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  const { status, user, list, handleClick, handleRemoveUser, handleSaveUser } =
+    useUsers();
 
   return (
     <div className={cn(className, styles.reviewWrapper)} {...props}>
-      {loading ? (
+      {status === "pending" ? (
         <span className={styles.loading}>Loading users...</span>
       ) : (
         <table className={styles.table}>
@@ -74,7 +24,7 @@ const Review = ({ className, ...props }: ReviewProps): JSX.Element => {
               <th>Username</th>
               <th>Email</th>
               <th>Password</th>
-              {!idParams.idUser ? (
+              {!user ? (
                 <>
                   <th>Profile</th>
                   <th>Destroy</th>
@@ -85,8 +35,8 @@ const Review = ({ className, ...props }: ReviewProps): JSX.Element => {
             </tr>
           </thead>
           <tbody className={styles.tableMain}>
-            {!idParams.idUser ? (
-              users?.map((user: User) => (
+            {!user ? (
+              list?.map((user: User) => (
                 <tr key={user._id}>
                   <td>{user._id}</td>
                   <td>{user.username}</td>
@@ -97,6 +47,7 @@ const Review = ({ className, ...props }: ReviewProps): JSX.Element => {
                       color='none'
                       link={`users/${user._id}`}
                       style={{ textAlign: "center" }}
+                      onClick={() => handleSaveUser(user._id)}
                     >
                       View profile
                     </Button>
@@ -110,12 +61,12 @@ const Review = ({ className, ...props }: ReviewProps): JSX.Element => {
               ))
             ) : (
               <tr>
-                <td>{object[1].id}</td>
-                <td>{object[1].username}</td>
-                <td>{object[1].email}</td>
-                <td>{object[1].password}</td>
+                <td>{user && user._id}</td>
+                <td>{user && user.username}</td>
+                <td>{user && user.email}</td>
+                <td>{user && user.password}</td>
                 <td className={styles.tdButton}>
-                  <Button color='none' link={`users/${object[1].id}/edit`}>
+                  <Button color='none' link={`users/${user && user._id}/edit`}>
                     Edit user
                   </Button>
                 </td>
@@ -127,8 +78,13 @@ const Review = ({ className, ...props }: ReviewProps): JSX.Element => {
       <Button color='none' link={`users/create`}>
         Create a new users
       </Button>
-      {idParams.idUser && (
-        <Button color='none' link={`users`} style={{ marginTop: 10 }}>
+      {user && (
+        <Button
+          color='none'
+          link={`users`}
+          style={{ marginTop: 10 }}
+          onClick={handleRemoveUser}
+        >
           View all users
         </Button>
       )}
