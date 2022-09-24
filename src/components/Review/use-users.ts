@@ -10,8 +10,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 
 export const useUsers = () => {
-  const { user } = useAppSelector(selectAllUsers);
-  const { list, status } = useAppSelector(selectAllUsers);
+  const { list, status, user } = useAppSelector(selectAllUsers);
 
   const dispatch = useAppDispatch();
 
