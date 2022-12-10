@@ -15,6 +15,7 @@ In this project, I studied the Apollo client and the Kiel graph, I also used the
 - react-dom
 - react-redux
 - reduxtoolkit
+- type-graphql
 - react-router-dom
 - react-hook-form
 - webpack
