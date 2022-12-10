@@ -2,7 +2,7 @@
 
 ### :pushpin: About project
 <p align="justify">
-In this project, I studied the Apollo client and the Kiel graph, I also used the store, a regular client to work with the customer database, deleting, adding and changing</p>
+In this project, I studied the Apollo client and the graphql, I also used the store, a regular client to work with the customer database, deleting, adding and changing</p>
 
 ---
 
